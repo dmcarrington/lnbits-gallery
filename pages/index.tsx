@@ -11,8 +11,10 @@ import cloudinary from "../utils/cloudinary";
 import getBase64ImageUrl from "../utils/generateBlurPlaceholder";
 import type { ImageProps } from "../utils/types";
 import { useLastViewedPhoto } from "../utils/useLastViewedPhoto";
+import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import client from "../lib/mongodb";
 
-const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
+const Home: NextPage = ({ images }: { images: ImageProps[] } ) => {
   const router = useRouter();
   const { photoId } = router.query;
   const [lastViewedPhoto, setLastViewedPhoto] = useLastViewedPhoto();
@@ -49,6 +51,8 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
             }}
           />
         )}
+        <h1 className="text-4xl text-center text-white font-bold sm:p-10">My Gallery</h1>
+        <p className="text-white/80 sm:p-5"> Here are some of my photos, if you see something you like, you can purchase the full-size version through the LNBits paywall link.</p>
         <div className="columns-1 gap-4 sm:columns-2 xl:columns-3 2xl:columns-4">
           {images.map(({ id, public_id, format, blurDataUrl }) => (
             <Link
@@ -60,7 +64,7 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
               className="after:content group relative mb-5 block w-full cursor-zoom-in after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:shadow-highlight"
             >
               <Image
-                alt="Next.js Conf photo"
+                alt="Photo"
                 className="transform rounded-lg brightness-90 transition will-change-auto group-hover:brightness-110"
                 style={{ transform: "translate3d(0, 0, 0)" }}
                 placeholder="blur"
@@ -96,6 +100,16 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
 export default Home;
 
 export async function getStaticProps() {
+  try {
+    await client.connect(); // `await client.connect()` will use the default database passed in the MONGODB_URI
+  } catch (e) {
+    console.error(e);
+    return {
+      props: { isConnected: false },
+    };
+  }
+  console.log("MongoDB connected");
+
   const results = await cloudinary.v2.search
     .expression(`folder:${process.env.CLOUDINARY_FOLDER}/*`)
     .sort_by("public_id", "desc")
@@ -105,12 +119,15 @@ export async function getStaticProps() {
 
   let i = 0;
   for (let result of results.resources) {
+    const paywall = await client.db("lnbits-gallery").collection("gallery").findOne({ "public_id": result.public_id });
+    
     reducedResults.push({
       id: i,
       height: result.height,
       width: result.width,
       public_id: result.public_id,
       format: result.format,
+      paywall: paywall ? paywall.paywall : false,
     });
     i++;
   }
@@ -127,6 +144,7 @@ export async function getStaticProps() {
   return {
     props: {
       images: reducedResults,
+      isConnected: true,
     },
   };
 }
