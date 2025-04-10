@@ -81,7 +81,7 @@ export default function SharedModal({
                   width={navigation ? 1280 : 1920}
                   height={navigation ? 853 : 1280}
                   priority
-                  alt="Next.js Conf image"
+                  alt={currentImage.display_name}
                   onLoad={() => setLoaded(true)}
                 />
               </motion.div>
@@ -134,6 +134,9 @@ export default function SharedModal({
                     <ArrowUturnLeftIcon className="h-5 w-5" />
                   )}
                 </button>
+                <p className="text-sm text-white/75">
+                  {currentImage.display_name}
+                </p>
               </div>
             </div>
           )}

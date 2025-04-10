@@ -7,6 +7,7 @@ export interface ImageProps {
   format: string;
   blurDataUrl?: string;
   paywall?: string;
+  display_name?: string;
 }
 
 export interface SharedModalProps {

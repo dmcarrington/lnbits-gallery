@@ -54,7 +54,7 @@ const Home: NextPage = ({ images }: { images: ImageProps[] } ) => {
         <h1 className="text-4xl text-center text-white font-bold sm:p-10">My Gallery</h1>
         <p className="text-white/80 sm:p-5"> Here are some of my photos, if you see something you like, you can purchase the full-size version through the LNBits paywall link.</p>
         <div className="columns-1 gap-4 sm:columns-2 xl:columns-3 2xl:columns-4">
-          {images.map(({ id, public_id, format, blurDataUrl }) => (
+          {images.map(({ id, public_id, format, blurDataUrl, display_name }) => (
             <Link
               key={id}
               href={`/?photoId=${id}`}
@@ -64,7 +64,7 @@ const Home: NextPage = ({ images }: { images: ImageProps[] } ) => {
               className="after:content group relative mb-5 block w-full cursor-zoom-in after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:shadow-highlight"
             >
               <Image
-                alt="Photo"
+                alt={display_name}
                 className="transform rounded-lg brightness-90 transition will-change-auto group-hover:brightness-110"
                 style={{ transform: "translate3d(0, 0, 0)" }}
                 placeholder="blur"
@@ -76,7 +76,7 @@ const Home: NextPage = ({ images }: { images: ImageProps[] } ) => {
                   (max-width: 1280px) 50vw,
                   (max-width: 1536px) 33vw,
                   25vw"
-              />
+              />  
             </Link>
           ))}
         </div>
@@ -119,6 +119,7 @@ export async function getStaticProps() {
 
   let i = 0;
   for (let result of results.resources) {
+    //console.log(result);
     const paywall = await client.db("lnbits-gallery").collection("gallery").findOne({ "public_id": result.public_id });
     
     reducedResults.push({
@@ -128,6 +129,7 @@ export async function getStaticProps() {
       public_id: result.public_id,
       format: result.format,
       paywall: paywall ? paywall.paywall : false,
+      display_name: result.display_name
     });
     i++;
   }
