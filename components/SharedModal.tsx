@@ -15,7 +15,7 @@ import downloadPhoto from "../utils/downloadPhoto";
 import { range } from "../utils/range";
 import type { ImageProps, SharedModalProps } from "../utils/types";
 import Twitter from "./Icons/Twitter";
-import client from "../lib/mongodb";
+import { client } from "../lib/mongodb";
 
 export default function SharedModal({
   index,
@@ -59,6 +59,7 @@ export default function SharedModal({
         className="relative z-50 flex aspect-[3/2] w-full max-w-7xl items-center wide:h-full xl:taller-than-854:h-auto"
         {...handlers}
       >
+        
         {/* Main image */}
         <div className="w-full overflow-hidden">
           <div className="relative flex aspect-[3/2] items-center justify-center">
@@ -119,7 +120,7 @@ export default function SharedModal({
               <div className="absolute top-0 right-0 flex items-center gap-2 p-3 text-white">
                 <a href={`${currentImage.paywall}`} target="_blank"
                   className="rounded-full bg-black/50 p-2 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white"
-                  title="Open paywall">
+                  title="Purchase full-size image via LNbits">
                   <ArrowDownTrayIcon className="h-5 w-5" />
                 </a>
               </div>
@@ -134,7 +135,7 @@ export default function SharedModal({
                     <ArrowUturnLeftIcon className="h-5 w-5" />
                   )}
                 </button>
-                <p className="text-sm text-white/75">
+                <p className="text-lg text-black text-bold">
                   {currentImage.display_name}
                 </p>
               </div>

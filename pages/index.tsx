@@ -12,7 +12,7 @@ import getBase64ImageUrl from "../utils/generateBlurPlaceholder";
 import type { ImageProps } from "../utils/types";
 import { useLastViewedPhoto } from "../utils/useLastViewedPhoto";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
-import client from "../lib/mongodb";
+import { client, Connect } from "../lib/mongodb";
 
 const Home: NextPage = ({ images }: { images: ImageProps[] } ) => {
   const router = useRouter();
@@ -101,7 +101,7 @@ export default Home;
 
 export async function getStaticProps() {
   try {
-    await client.connect(); // `await client.connect()` will use the default database passed in the MONGODB_URI
+    await Connect(); // `await client.connect()` will use the default database passed in the MONGODB_URI
   } catch (e) {
     console.error(e);
     return {
