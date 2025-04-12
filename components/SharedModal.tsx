@@ -62,7 +62,9 @@ export default function SharedModal({
         
         {/* Main image */}
         <div className="w-full overflow-hidden">
-          <div className="relative flex aspect-[3/2] items-center justify-center">
+        
+          <div className="relative flex aspect-[3/3] items-center justify-center">
+            
             <AnimatePresence initial={false} custom={direction}>
               <motion.div
                 key={index}
@@ -73,6 +75,12 @@ export default function SharedModal({
                 exit="exit"
                 className="absolute"
               >
+              <div className="relative flex items-center justify-center p-3">
+                <p className="text-lg text-white text-bold">
+                  {currentImage.display_name}
+                </p>
+              </div>
+                <div>
                 <Image
                   src={`https://res.cloudinary.com/${
                     process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
@@ -84,7 +92,8 @@ export default function SharedModal({
                   priority
                   alt={currentImage.display_name}
                   onLoad={() => setLoaded(true)}
-                />
+                  />
+                  </div>
               </motion.div>
             </AnimatePresence>
           </div>
@@ -117,14 +126,14 @@ export default function SharedModal({
                   )}
                 </>
               )}
-              <div className="absolute top-0 right-0 flex items-center gap-2 p-3 text-white">
+              <div className="absolute top-8 right-0 flex items-center gap-2 p-3 text-white">
                 <a href={`${currentImage.paywall}`} target="_blank"
                   className="rounded-full bg-black/50 p-2 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white"
                   title="Purchase full-size image via LNbits">
                   <ArrowDownTrayIcon className="h-5 w-5" />
                 </a>
               </div>
-              <div className="absolute top-0 left-0 flex items-center gap-2 p-3 text-white">
+              <div className="absolute top-8 left-0 flex items-center gap-2 p-3 text-white">
                 <button
                   onClick={() => closeModal()}
                   className="rounded-full bg-black/50 p-2 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white"
@@ -135,9 +144,6 @@ export default function SharedModal({
                     <ArrowUturnLeftIcon className="h-5 w-5" />
                   )}
                 </button>
-                <p className="text-lg text-black text-bold">
-                  {currentImage.display_name}
-                </p>
               </div>
             </div>
           )}
