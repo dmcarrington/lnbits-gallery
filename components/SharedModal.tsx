@@ -47,6 +47,22 @@ export default function SharedModal({
   });
 
   let currentImage = images ? images[index] : currentPhoto;
+  let maxWidth = 0;
+  let maxHeight = 0;
+  let imageScale = "w_768";
+  if (currentImage) {
+    console.log("width: " + currentImage.width);
+    console.log("height: " + currentImage.height);
+    if (navigation) {
+      maxWidth = currentImage.width > currentImage.height ? 1024 : 480;
+      maxHeight = currentImage.width > currentImage.height ? 768 : 640;
+    } else {
+      maxWidth = currentImage.width > currentImage.height ? 1920: 768;
+      maxHeight = currentImage.width > currentImage.height ? 1280: 1024;
+    }
+    imageScale = "w_" + maxWidth.toString();
+  }
+  console.log(imageScale)
 
   return (
     <MotionConfig
@@ -55,14 +71,17 @@ export default function SharedModal({
         opacity: { duration: 0.2 },
       }}
     >
+      
       <div
         className="relative z-50 flex aspect-[3/2] w-full max-w-7xl items-center wide:h-full xl:taller-than-854:h-auto"
         {...handlers}
+        
       >
         
         {/* Main image */}
-        <div className="w-full overflow-hidden">
         
+        <div className="w-full overflow-hidden">
+          
           <div className="relative flex aspect-[3/3] items-center justify-center">
             
             <AnimatePresence initial={false} custom={direction}>
@@ -75,7 +94,7 @@ export default function SharedModal({
                 exit="exit"
                 className="absolute"
               >
-              <div className="relative flex items-center justify-center p-3">
+                <div className="relative flex items-center justify-center p-3">
                 <p className="text-lg text-white text-bold">
                   {currentImage.display_name}
                 </p>
@@ -84,11 +103,12 @@ export default function SharedModal({
                 <Image
                   src={`https://res.cloudinary.com/${
                     process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-                  }/image/upload/c_scale,${navigation ? "w_1280" : "w_1920"}/${
+                  }/image/upload/c_scale,${imageScale}/${
                     currentImage.public_id
                   }.${currentImage.format}`}
-                  width={navigation ? 1280 : 1920}
-                  height={navigation ? 853 : 1280}
+                  
+                  width={maxWidth}
+                  height={maxHeight}
                   priority
                   alt={currentImage.display_name}
                   onLoad={() => setLoaded(true)}
