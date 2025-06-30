@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
+import { useSession, signOut } from "next-auth/react";
 import Bridge from "../components/Icons/Bridge";
 import Logo from "../components/Icons/Logo";
 import Modal from "../components/Modal";
@@ -13,6 +14,52 @@ import type { ImageProps } from "../utils/types";
 import { useLastViewedPhoto } from "../utils/useLastViewedPhoto";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import { client, Connect } from "../lib/mongodb";
+
+// Auth Button Component
+function AuthButton() {
+  const { data: session, status } = useSession();
+
+  if (status === "loading") {
+    return (
+      <div className="text-white/60">
+        Loading...
+      </div>
+    );
+  }
+
+  if (session) {
+    return (
+      <div className="flex items-center space-x-4">
+        <span className="text-white/80">
+          Welcome, {session.user.username}
+        </span>
+        {session.user.role === 'admin' && (
+          <Link
+            href="/admin/dashboard"
+            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium text-white transition-colors"
+          >
+            Dashboard
+          </Link>
+        )}
+        <button
+          onClick={() => signOut({ callbackUrl: '/' })}
+          className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md text-sm font-medium text-white transition-colors"
+        >
+          Logout
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      href="/login"
+      className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium text-white transition-colors"
+    >
+      Login
+    </Link>
+  );
+}
 
 const Home: NextPage = ({ images }: { images: ImageProps[] } ) => {
   const router = useRouter();
@@ -43,6 +90,12 @@ const Home: NextPage = ({ images }: { images: ImageProps[] } ) => {
         />
       </Head>
       <main className="mx-auto max-w-[1960px] p-4">
+        {/* Header with Login/Logout */}
+        <div className="flex justify-between items-center mb-8">
+          <div></div>
+          <AuthButton />
+        </div>
+        
         {photoId && (
           <Modal
             images={images}
