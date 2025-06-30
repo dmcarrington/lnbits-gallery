@@ -7,7 +7,7 @@ import { User } from '../../lib/definitions';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useState } from 'react';
-import { CldUploadButton } from "next-cloudinary";
+import { CldUploadButton, CloudinaryUploadWidgetInfo } from "next-cloudinary";
 
 interface DashboardProps {
   users: User[];
@@ -315,8 +315,9 @@ export default function AdminDashboard({ users, totalUsers, galleryStats }: Dash
                     uploadPreset="gallery-admin"
                     onSuccess={(results)=> {
                         console.log("Upload successful", results);
-                        const public_id = results.info.public_id;
-                        const url = results.info.url
+                        let info = results.info as CloudinaryUploadWidgetInfo;
+                        const public_id = info.public_id;
+                        const url = info.url
                         createPaywall(public_id, url);
                     }}
                     className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md text-sm font-medium"
