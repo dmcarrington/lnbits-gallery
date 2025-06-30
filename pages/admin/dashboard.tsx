@@ -7,6 +7,7 @@ import { User } from '../../lib/definitions';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useState } from 'react';
+import { CldUploadButton, CloudinaryUploadWidgetInfo } from "next-cloudinary";
 
 interface DashboardProps {
   users: User[];
@@ -305,8 +306,23 @@ export default function AdminDashboard({ users, totalUsers, galleryStats }: Dash
                   </tbody>
                 </table>
               </div>
+
+              
             </div>
           </div>
+          <div className="flex justify-between items-center py-6"> 
+            <CldUploadButton    
+                    uploadPreset="gallery-admin"
+                    onSuccess={(results)=> {
+                        console.log("Upload successful", results);
+                        let info = results.info as CloudinaryUploadWidgetInfo;
+                        const public_id = info.public_id;
+                        const url = info.url
+                        createPaywall(public_id, url);
+                    }}
+                    className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md text-sm font-medium"
+                />
+            </div>
         </main>
       </div>
     </>
@@ -358,3 +374,26 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 };
+
+export async function createPaywall(public_id: string, url: string) {
+    fetch("/api/post/paywall", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ public_id, url }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Success:", data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      }
+      ); 
+  }
